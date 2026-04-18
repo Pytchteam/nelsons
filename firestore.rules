@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helper Functions ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerified() && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Lead Security ---
+    match /leads/{leadId} {
+      function isValidLead(data) {
+        return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+               data.email is string && data.email.size() > 0 && data.email.size() <= 255 &&
+               data.status in ["New", "Contacted", "Quoting", "Approved", "In Production", "Completed", "Closed"] &&
+               data.createdAt == request.time;
+      }
+
+      allow create: if isValidLead(incoming()) && 
+                       incoming().keys().hasAll(['name', 'email', 'status', 'createdAt']) &&
+                       incoming().keys().size() >= 4;
+      
+      allow read, update, delete: if isAdmin();
+    }
+
+    // --- Quote Security ---
+    match /quotes/{quoteId} {
+      function isValidQuote(data) {
+        return data.productType is string && data.productType.size() > 0 &&
+               data.status in ["New", "Contacted", "Quoting", "Approved", "In Production", "Completed", "Closed"] &&
+               data.createdAt == request.time;
+      }
+
+      allow create: if isValidQuote(incoming());
+      allow read, update, delete: if isAdmin();
+    }
+
+    // --- Portfolio Security ---
+    match /portfolio/{projectId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // --- Admin Security ---
+    match /admins/{adminId} {
+      // Only an existing admin can add or modify admins
+      allow read: if isVerified();
+      allow write: if isAdmin() || (isVerified() && request.auth.token.email == "team@pytchmarketing.com");
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "Captured contact info from popups and simple intent flows.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "businessName": { "type": "string" },
+        "intent": { "type": "string", "description": "e.g., 'start_business', 'promote', 'signage'" },
+        "source": { "type": "string", "description": "e.g., 'entry_popup', 'guided_flow'" },
+        "status": { "type": "string", "enum": ["New", "Contacted", "Quoting", "Approved", "In Production", "Completed", "Closed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "status", "createdAt"]
+    },
+    "QuoteRequest": {
+      "title": "Quote Request",
+      "description": "Structured quote requests with specifications and optional file references.",
+      "type": "object",
+      "properties": {
+        "leadId": { "type": "string" },
+        "productType": { "type": "string" },
+        "dimensions": { "type": "string" },
+        "quantity": { "type": "number" },
+        "specs": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "fileName": { "type": "string" },
+        "urgency": { "type": "string" },
+        "notes": { "type": "string" },
+        "status": { "type": "string", "enum": ["New", "Contacted", "Quoting", "Approved", "In Production", "Completed", "Closed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productType", "status", "createdAt"]
+    },
+    "PortfolioProject": {
+      "title": "Portfolio Project",
+      "description": "Before/After showcases for the transformation section.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "beforeImageUrl": { "type": "string" },
+        "afterImageUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "impact": { "type": "string" }
+      },
+      "required": ["title", "beforeImageUrl", "afterImageUrl"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized staff members.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "Collection of business leads."
+    },
+    "/quotes/{quoteId}": {
+      "schema": "QuoteRequest",
+      "description": "Collection of detailed quote requests."
+    },
+    "/portfolio/{projectId}": {
+      "schema": "PortfolioProject",
+      "description": "Public transformation showcases."
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "List of authorized admin users."
+    }
+  }
+}

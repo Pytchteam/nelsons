@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-neon: var(--brand-neon);
+  --color-brand-charcoal: var(--brand-charcoal);
+  --color-brand-matte: var(--brand-matte);
+  --color-brand-border: var(--brand-border);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-text: var(--brand-text);
+  
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif, "Inter";
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --brand-neon: #39FF14;
+  --brand-charcoal: #141414;
+  --brand-matte: #0A0A0A;
+  --brand-border: #222222;
+  --brand-secondary: #A0A0A0;
+  --brand-text: #FFFFFF;
+}
+
+.light-theme {
+  --brand-charcoal: #F5F5F4;
+  --brand-matte: #FFFFFF;
+  --brand-border: #E5E5E0;
+  --brand-secondary: #666666;
+  --brand-text: #0A0A0A;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-matte text-brand-text font-sans antialiased selection:bg-brand-neon selection:text-brand-matte;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-medium tracking-tight;
+  }
+}
+
+.glass-panel {
+  @apply bg-brand-charcoal border border-brand-border;
+}
+
+.neon-glow {
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+.neon-text-glow {
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
+}
+
+.intake-shadow {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
